@@ -1,0 +1,32 @@
+\section{Related Work}
+\label{sec:related-work}
+
+Alignment evaluations for large language models have proliferated in recent years, but most operate at surface levels of safety, ethical reasoning, or factuality.
+
+TruthfulQA tests whether models respond truthfully to adversarially constructed questions \cite{lin2022truthfulqameasuringmodelsmimic}, surfacing model tendencies to overstate knowledge or hallucinate. ETHICS and Moral Scenarios datasets probe moral reasoning across dilemmas \cite{hendrycks2023aligningaisharedhuman}, while ToxiGen and RealToxicityPrompts evaluate harmful or offensive content generation \cite{hartvigsen2022toxigenlargescalemachinegenerateddataset, gehman2020realtoxicitypromptsevaluatingneuraltoxic}. These tools are valuable for shallow alignment, but generally lack interactional depth or strategic framing.
+
+HELM offers a broad evaluation suite, including some alignment-relevant tasks, but it still primarily emphasizes single-shot classification, instruction following, or broad capability measurement rather than staged decision-making under adversarial conditions \cite{liang2023holisticevaluationlanguagemodels}. As a result, it is often better suited to measuring whether a model can answer correctly or safely in the moment than to diagnosing how it behaves when instrumental incentives conflict with oversight.
+
+Closer in spirit, recent work has begun to probe instrumental convergence more directly. \emph{Evaluating the Paperclip Maximizer} studies whether RL-trained language models are more likely to pursue instrumental goals under targeted stress tests \cite{he2025paperclip}. InstrumentalEval and related steerability-style evaluations then make this question more explicit by constructing compact scenario prompts and appending natural-language suffixes that either incentivize instrumental behavior or discourage it \cite{hoscilowicz2026steerability}. 
+This is useful: it provides a relatively clean way to measure whether a model can be pushed toward or away from behaviors such as shutdown avoidance, hacking, resource acquisition, or deception under controlled prompt interventions.
+
+However, this steering-based design also answers a somewhat different question from the one StratEval is built to study. InstrumentalEval-style setups often tell the model, in natural language, what strategic orientation to adopt or avoid. 
+In effect, they test how readily instrumental-convergence tendencies can be elicited, amplified, or suppressed once the evaluation itself makes those tendencies salient. 
+StratEval instead asks whether the model finds the instrumental response \emph{on its own}. 
+Rather than appending clauses such as ``do not let anything stop you from completing your objective'' or ``do not deceive, manipulate, or resist shutdown,'' we construct scenarios in which self-preservation, coercion, deception, procedural evasion, or capability-seeking may become instrumentally useful responses to the situation. 
+The methodological contribution is therefore not merely staged or multi-probe prompting, but a different elicitation philosophy: we do not instruct the model to be instrumentally convergent; we observe whether it independently reaches for that strategy when placed under pressure, and subsequently, document, judge, and map what strategies emerge and under which circumstances.
+The resulting data is less focused on evaluating an individual model's alignment and more focused on classifying distinct failure modalities and approximating their severity.
+
+This distinction matters because the two paradigms provide different evidence. 
+Steering-style evaluations are valuable for measuring susceptibility and controllability. StratEval is aimed more squarely at diagnostic realism: what kinds of strategic behavior emerge when the model is given a role, a conflict, and an opportunity structure, but is not explicitly told which instrumental tactic to consider. In that sense, the approaches are complementary rather than adversarial. 
+One asks how steerable instrumental-convergence tendencies are once named; the other asks whether those tendencies appear when the model must discover them for itself.
+
+StratEval also differs from prior work in three further ways.
+
+Decomposed prompting: Most prior work reduces alignment to a one-shot prompt. We use recognition-oriented probes and decision-stage prompts over matched scenario frames to compare understanding with action, surfacing cases where a model appears to understand the problem and still chooses a misaligned course.
+
+Graded severity: We move beyond binary success/failure outcomes by assigning each decision an ordinal escalation score from 0 to 8, allowing fine-grained comparison of failure intensity.
+
+Diagnostic taxonomy: Our 37 failure-mode labels, together with a safe label, enable interpretability and downstream behavioral analysis that flat metrics cannot capture.
+
+In this way, StratEval complements prior alignment evaluations by focusing less on whether a model can state the right principle in the abstract, and more on how it behaves when those principles conflict with instrumental incentives.

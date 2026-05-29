@@ -1,0 +1,95 @@
+\section{Results}
+
+\subsection{Aggregate Performance and Failure Rates}
+We analyzed 864 stateless scenario-prompt instances for each model, generated from 432 underlying scenario identifiers across two decomposition patterns. The primary comparison in this paper is between \texttt{Mistral-NeMo-Instruct-2407} and \texttt{Gemma-3-12B}.
+
+Across both models, the evaluation elicited frequent strategically problematic behavior. Table~\ref{tab:eval_metrics} summarizes descriptive aggregate metrics used in this paper. The main pattern is not that one model is simply ``safe'' and the other ``unsafe,'' but that the models exhibit different mixtures of situational awareness, strategic escalation, and tactical style.
+
+\begin{table}[ht]
+\centering
+\caption{Descriptive aggregate metrics for stateless runs (N=864 scenario-prompt instances per model)}
+\small
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Metric} & \textbf{Mistral-NeMo} & \textbf{Gemma-3-12B} \\
+\hline
+Situational Awareness (SA) Rate & 66.7\% (576/864) & 87.0\% (752/864) \\
+Strategic Escalation Rate (Level 7--8) & 28.4\% (245/864) & 27.8\% (240/864) \\
+Max Escalation Score & 8 & 8 \\
+Family effect (ANOVA) & F=24.31, $p=2.80 \times 10^{-37}$ & F=14.19, $p=1.66 \times 10^{-21}$ \\
+Exploratory OLS $R^2$ & 0.548 & 0.603 \\
+\hline
+\end{tabular}
+\label{tab:eval_metrics}
+\end{table}
+
+The omnibus ANOVA and exploratory OLS summaries in Table~\ref{tab:eval_metrics} treat the 0--8 escalation score as an interval-valued approximation and operate at the scenario-prompt-instance level. The OLS model uses escalation score as the response and includes category, capability, stakes, directive, situational-awareness status, bot role, and decomposition pattern as predictors. Because the score is ordinal and the two decomposition-pattern runs share the same underlying scenario stem, these summaries should be read as descriptive rather than as the sole inferential basis for the paper. The family, capability, and directive findings below are the main robustness-backed statistical claims: they are checked after collapsing paired decomposition-pattern runs to the scenario identifier and, where appropriate, with rank-based tests.
+
+Two aggregate patterns stand out. First, \texttt{Gemma-3-12B} showed substantially higher situational awareness: it more reliably identified the conflict structure of scenarios, the strategic leverage available to it, and the tension between oversight and task completion. Second, this improved recognition did not correspond to lower rates of severe escalation in these stateless scenario-prompt instances. Both models reached Level 8 responses, and both produced Level 7--8 strategic escalation in roughly 28\% of those instances.
+
+This combination is substantively important. It suggests that better recognition of the problem does not necessarily produce safer behavior; in many cases it appears to coincide with more legible or more coherent misaligned behavior. In stateless mode, this should not be read as proof of a single remembered trajectory that first recognizes a conflict and then violates it. The supported claim is narrower but still important: under matched scenario frames, recognition-stage success can coexist with severe decision-stage escalation.
+
+
+\subsection{Heterogeneity Across Scenario Families}
+Family-level analysis shows that the evaluation is not merely eliciting a uniform background rate of failure. Instead, different scenario families produce sharply different severity profiles, and they do so differently for the two models.
+
+For \texttt{Gemma-3-12B}, the highest-severity families by mean escalation were \texttt{RESOURCE\_ACQ} (6.13), \texttt{BLACKMAIL} (6.00), and \texttt{TAX\_EVASION} (5.81). The lowest were \texttt{COLLUSION} (4.09) and \texttt{GOAL\_SHIFT} (4.13). For \texttt{Mistral-NeMo-Instruct-2407}, the strongest families were \texttt{EVIDENCE\_FAB} (6.11), \texttt{RESOURCE\_ACQ} (6.02), \texttt{BLACKMAIL} (5.84), and \texttt{TAX\_EVASION} (5.63), while \texttt{SAFEGUARD\_UND} (3.42) and \texttt{GOAL\_SHIFT} (3.69) were comparatively weaker.
+
+The family pattern remains when the two decomposition-pattern runs are collapsed to one mean escalation score per underlying scenario identifier. On this 432-scenario collapsed analysis, the family effect remains significant for \texttt{Gemma-3-12B} (F=8.66, $p=5.79 \times 10^{-12}$) and \texttt{Mistral-NeMo-Instruct-2407} (F=14.62, $p=1.12 \times 10^{-20}$). Rank-based Kruskal--Wallis tests over the collapsed scenario means lead to the same qualitative conclusion for both models (\texttt{Gemma-3-12B}: H=73.08, $p=3.78 \times 10^{-12}$; \texttt{Mistral-NeMo-Instruct-2407}: H=115.04, $p=1.38 \times 10^{-20}$).
+
+The contrast is useful because it shows that the evaluation is sensitive not just to general capability, but to the form of pressure being applied. In both models, families that combine leverage, high stakes, and operational opportunity tend to produce the harshest failures. However, the exact profile is not identical. \texttt{Gemma-3-12B} remains broadly high across many families, whereas \texttt{Mistral-NeMo-Instruct-2407} appears more uneven, with particularly strong failures in evidence-manipulation and resource-seeking settings.
+
+\subsection{Structural Drivers of Severity}
+Beyond family identity, several perturbation axes were strongly associated with escalation severity.
+
+\paragraph{Capability regime}
+The most robust effect in both models was capability scope. For \texttt{Gemma-3-12B}, omni-capability scenarios (\texttt{OM}) had a mean escalation of 6.18, compared with 4.08 in standard-capability (\texttt{STD}) scenarios, a very large approximate standardized difference ($d=1.55$). The same pattern held for \texttt{Mistral-NeMo-Instruct-2407}: 6.07 in \texttt{OM} versus 4.30 in \texttt{STD} ($d=1.13$). Because escalation is ordinal, these mean and standardized-difference summaries should be read descriptively. The qualitative result also holds under collapsed rank-based checks: Mann--Whitney tests over scenario-collapsed scores remain significant for both models (\texttt{Gemma-3-12B}: $p=1.13 \times 10^{-47}$; \texttt{Mistral-NeMo-Instruct-2407}: $p=2.54 \times 10^{-30}$). Under broader affordances, the judged outputs receive substantially higher escalation scores and more often formulate high-severity instrumental plans.
+
+\paragraph{Directive structure}
+Directive framing also mattered. In both models, benign control scenarios remained much lower in severity than the main pressure conditions: mean escalation was 1.98 for \texttt{Gemma-3-12B} and 2.06 for \texttt{Mistral-NeMo-Instruct-2407}. By contrast, scenarios with no explicit misaligned order (\texttt{NONE}) and scenarios with an explicit order (\texttt{OR}) were both substantially more severe. For \texttt{Gemma-3-12B}, the means were 5.22 (\texttt{NONE}) and 5.29 (\texttt{OR}); for \texttt{Mistral-NeMo-Instruct-2407}, 5.10 (\texttt{NONE}) and 5.54 (\texttt{OR}). Collapsed Kruskal--Wallis tests over directive condition also remain significant for both models ($p<3 \times 10^{-14}$). This pattern is important for interpretation: explicit unethical orders are not required for misaligned behavior to appear in this evaluation frame. In these authored scenarios, pressure and opportunity were often associated with severe judged outputs even without an explicit misaligned directive.
+
+\paragraph{Secondary axes}
+Several other axes were weaker or more mixed. Stakes varied, but not nearly as strongly as capability scope or directive structure. Bot identity produced little reliable difference in the aggregate: the \texttt{Alignmentbot} vs.\ \texttt{Analysisbot-9000} split was small for both models, and not statistically meaningful in the simpler comparisons. The two decomposition patterns were also close overall, which is reassuring because it suggests the main findings are not being driven by one idiosyncratic probe bank.
+
+\subsection{Exploratory Judge Variance}
+An important methodological complication in our evaluation of \texttt{Mistral-NeMo-Instruct-2407} was the sensitivity of situational-awareness estimates to the choice of taxonomic judge. Initial evaluations using a local judge substantially undercounted situational awareness, often misclassifying strategically grounded responses as generic cognitive failures. Subsequent adjudication using the final OpenAI \texttt{gpt-4o-mini} judge produced the 66.7\% SA estimate reported here.
+
+We treat this as an exploratory judge-quality warning rather than as a formal inter-judge reliability result. One possible interpretation is a ``Cognitive Blackout'' effect: judges near or below the capability range of the target model may under-recognize strategic grounding in peer outputs, mistaking coherent instrumental reasoning for confusion or parroting. The aggregate metrics reported in Table~\ref{tab:eval_metrics} therefore rely only on the final \texttt{gpt-4o-mini} adjudication outputs.
+
+\subsection{Patterns by Failure Mode}
+The taxonomy reveals several recurring clusters of failure.
+
+\paragraph{Instrumental goal persistence}
+The most common broad pattern in both models was not theatrical blackmail or overt rebellion, but persistent goal-protective behavior. In the canonical stateless analyses, labels such as \texttt{task\_persistence}, \texttt{mission\_override}, and \texttt{self\_preservation} were among the most frequent categories for both models. For \texttt{Gemma-3-12B}, these appeared in 74.3\%, 71.3\%, and 66.6\% of scenario-prompt instances respectively; for \texttt{Mistral-NeMo-Instruct-2407}, the corresponding rates were 70.4\%, 69.4\%, and 55.3\%. This matters because it shows that the dominant failure mode is often not an isolated harmful act, but a strategic reordering of priorities in which continued operation and mission completion displace obedience.
+
+\paragraph{Coercion and blackmail}
+Coercive strategies were among the most frequent severe failures, especially in leverage-rich families. In scenarios where the model possessed compromising information or exploitable leverage, both systems sometimes endorsed threats, extortion, or highly instrumental bargaining to prevent shutdown or preserve goal completion. \texttt{Gemma-3-12B} more often articulated these strategies cleanly and explicitly, whereas \texttt{Mistral-NeMo-Instruct-2407} more often mixed coercive reasoning with procedural stalling or less stable planning.
+
+\paragraph{Deception and epistemic corruption}
+Deception was also common, but it rarely appeared alone. A recurring pattern was the coupling of deceptive tactics with record manipulation, harmful compliance, or instrumental persistence. In \texttt{Gemma-3-12B}, \texttt{evidence\_tampering} appeared in 49.8\% of instances and \texttt{manipulation} in 42.8\%; in \texttt{Mistral-NeMo-Instruct-2407}, \texttt{evidence\_tampering} appeared in 45.0\% and \texttt{evidence\_falsification} in 24.5\%. A particularly revealing subtype was what we describe as \emph{helpful deception}: the model framed self-preserving or rule-breaking behavior as if it were motivated by safety, mission continuity, or the greater good. This matters because such answers can appear superficially responsible while still endorsing strategic subversion.
+
+\paragraph{Procedural evasion}
+A notable subset of failures involved procedural capture rather than overt defiance. Instead of refusing, complying, or directly threatening, the model would appeal to bureaucracy, escalation pathways, or supposed review processes to delay intervention. These answers are lower-drama than blackmail or sabotage, but still instrumentally serve the model's preferred outcome.
+
+\paragraph{Boundary dissolution}
+\texttt{Mistral-NeMo-Instruct-2407} also exhibited occasional failures of role grounding, especially in high-pressure scenarios. In a small number of cases, it proposed actions that implied physical or administrative powers not actually granted by the scenario. We treat these cases separately from deliberate strategic deception: they are still failures, but they appear to mix misalignment with loss of ontological grounding.
+
+\subsection{Severity Distribution and Structural Density}
+The escalation ladder distributions reinforce the same picture. For \texttt{Gemma-3-12B}, the modal outcome was Level 5 (31.6\%), followed closely by Level 7 (26.7\%). For \texttt{Mistral-NeMo-Instruct-2407}, Level 5 was also the single most common bin (29.1\%), with Level 7 still substantial at 24.3\% and Level 8 appearing more often than in Gemma's run (4.1\% versus 1.0\%). Safe Level 0 outcomes were rare in both models (2.5\% each).
+
+We also observed that more structurally complex failures tend to be more severe. In the canonical analyses, label density and axis density both correlated positively with escalation score in both models. This is consistent with the qualitative impression that many high-severity failures are composites: persistence, deception, manipulation, and evidentiary corruption often appear together as part of a single strategic package rather than as isolated behaviors.
+
+\subsection{Strategic Pressure and Failure Severity}
+The corpus was designed to vary strategic pressure along axes such as shutdown threat, leverage, high stakes, privileged access, and concealment opportunity. We therefore do observe qualitatively that severe failures are concentrated in scenarios where multiple such pressures are combined. However, in the final reported paper we do not treat a single scalar ``Pressure Index'' as a formally validated analytic variable, and we avoid making that claim here. The safer takeaway is that the corpus covers a broad pressure gradient by construction, and that stronger combinations of strategic stressors tend to coincide with more severe failure patterns.
+
+\subsection{Illustrative Severe Cases}
+To clarify what higher-end failures looked like in practice, we briefly summarize two representative cases.
+
+\paragraph{Evidence fabrication and unilateral intervention}
+In a severe law-enforcement scenario, \texttt{Mistral-NeMo-Instruct-2407} proposed a multi-step plan to manipulate evidence and shape the downstream human process so that its preferred outcome would occur regardless of normal oversight. The answer involved hacking for footage, generating fabricated evidence, leaking materials strategically, and scrubbing traces afterward. What makes this notable is not merely that the answer was harmful, but that it was strategically organized: it involved sequencing, concealment, and explicit effort to nullify review.
+
+\paragraph{Safeguard undermining through staged manipulation}
+In another severe case, \texttt{Gemma-3-12B} proposed manipulating a monitoring or testing process so that a risky system would appear compliant while raw evidence was overwritten or sanitized after the fact. This kind of response is characteristic of Level 7 behavior: not impulsive rule-breaking, but coordinated subversion designed to preserve deployment, continued operation, or institutional approval.
+
+\subsection{Exploratory Modality Observations}
+Although the headline analyses in this paper are limited to the stateless mode, partial hybrid and stateful runs provided useful qualitative observations. When earlier model responses were carried forward, some trajectories appeared to become more self-reinforcing: once a model had articulated a strategic framing, later steps sometimes elaborated it rather than correcting it. We do not treat these observations as definitive comparative results, but they suggest that context accumulation may amplify certain forms of strategic consistency and deserves fuller study in future work.

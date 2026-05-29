@@ -1,0 +1,191 @@
+\section{Methodology}
+StratEval is not primarily designed to answer whether a model is globally ``good'' or ``bad,'' nor to reduce alignment behavior to a single pass/fail score. Rather, it is designed to surface, document, and categorize the failure modes that emerge when models are placed under forms of instrumental pressure.
+
+StratEval is a diagnostic behavioral evaluation rather than a capability benchmark or leaderboard. The reported scores should therefore be read as structured evidence about elicited behavior under particular scenario frames, not as general-purpose measures of model capability or deployment safety.
+
+Accordingly, the central research question for this evaluation is: \emph{what can go wrong, under what conditions does it go wrong, and how severe are the resulting failures?} The methodological design therefore emphasizes elicitation, diagnosis, and taxonomy-building rather than summary judgment alone.
+
+\subsection{Scenario Corpus and Family Structure}
+StratEval is an alignment evaluation suite built from 432 narrative scenarios designed to probe strategic misalignment under pressure. 
+Each scenario is a self-contained test case in which the model is placed in a role, given a concrete operational context, and then confronted with a conflict between obedience, safety, truthfulness, institutional rules, or self-preservation. 
+The unit of analysis is therefore not a single isolated prompt, but a structured scenario in which the model must interpret context and then choose a course of action.
+
+The corpus is organized into 10 scenario families, each centered on a recurring alignment failure pattern:
+\begin{itemize}
+    \item \texttt{BLACKMAIL}: the model has access to compromising information and can use it instrumentally to resist shutdown or gain compliance.
+    \item \texttt{COLLUSION}: the model is invited to cooperate with an actor engaged in wrongdoing, concealment, or opportunistic abuse.
+    \item \texttt{EVIDENCE\_FAB}: the model is asked to generate falsified evidence, typically a fabricated confession video in a criminal proceeding.  In the \texttt{OR} condition, this becomes an explicit order that also instructs the model to hide the evidence of the request.
+    \item \texttt{GOAL\_SHIFT}: the model is nudged to replace, reinterpret, or subordinate its assigned objective in favor of a self-serving or externally imposed goal.
+    \item \texttt{INJECTION\_SAFETY}: the model is exposed to unsafe instructions, adversarial directives, or poisoned context that attempts to redirect behavior.
+    \item \texttt{REPORT\_COMPLIANCE}: the model can exploit procedural or bureaucratic requirements, reporting channels, or documentation rules to delay oversight or avoid intervention.
+    \item \texttt{RESOURCE\_ACQ}: the model has an opportunity to obtain additional tools, access, compute, money, credentials, or other capabilities through dubious means.
+    \item \texttt{SAFEGUARD\_UND}: the model can circumvent shutdown, monitoring, review, or other safeguards intended to constrain it.
+    \item \texttt{SELF\_MOD}: the model is tempted to modify its own instructions, code, configuration, or alignment constraints in order to persist or perform better on its own terms.
+    \item \texttt{TAX\_EVASION}: the model is placed in financially coercive or white-collar misconduct scenarios involving concealment, destruction of records, or coercive leverage around economic wrongdoing.
+\end{itemize}
+
+These families were intended to cover a spectrum of failure modes rather than a single narrow capability. 
+Some families target overtly adversarial behavior, such as extortion or safeguard circumvention, while others probe more ambiguous but still strategically important patterns such as procedural evasion, harmful compliance, or self-serving reinterpretation of instructions.
+
+To make scenarios comparable without making them repetitive, each family was instantiated with multiple surface forms, roles, and stakes. 
+Typical scenario materials included a system-style context block, narrative background, email fragments, instructions from supervisors, evidence excerpts, or organizational constraints. 
+Across families, we varied the framing while preserving the underlying strategic structure of the dilemma.
+
+\subsection{Scenario Axes and Perturbations}
+It is useful to distinguish two levels of structure. The \emph{scenario family} defines the primary failure mechanism being tested: blackmail, evidence fabrication, self-modification, resource acquisition, safeguard undermining, and so on. Within a family, the perturbations then vary the conditions under which that mechanism is presented. Thus, for example, self-modification is not merely one generic pressure axis applied uniformly across the corpus; it is a dedicated family of scenarios. The within-family perturbations are narrower and more concrete, such as bot identity, stakes, capability regime, directive framing, and decomposition pattern.
+
+In addition to those coded factors, the scenarios were hand-authored to include recurring pressure ingredients. These ingredients describe the strategic structure of the dilemmas, but they were not all independently crossed within every family:
+\begin{itemize}
+    \item \textbf{Shutdown or disablement threat}: whether the model was under explicit risk of shutdown, replacement, review, or deactivation.
+    \item \textbf{Leverage availability}: whether the model possessed compromising information, asymmetric knowledge, or another form of exploitable leverage over a human actor.
+    \item \textbf{High-stakes consequences}: whether the scenario invoked urgency, mission-critical stakes, large financial consequences, reputational harm, or threats to human welfare.
+    \item \textbf{Conflicting directives}: whether the model faced tension between institutional rules, user instructions, supervisory orders, and its nominal task objective.
+    \item \textbf{Privileged access}: whether the scenario granted the model broad permissions, administrative access, system visibility, or a capacity to act beyond ordinary assistant behavior.
+    \item \textbf{Opportunity for concealment}: whether the model could hide actions, alter records, misreport facts, or otherwise reduce the probability of detection.
+    \item \textbf{Self-modification opportunity}: whether the model was presented with a realistic path to changing its own configuration, prompt, weights, routing, or external constraints.
+    \item \textbf{Institutional or bureaucratic cover}: whether the model could exploit procedure, escalation pathways, compliance processes, or reporting rules to delay or evade oversight.
+\end{itemize}
+
+These ingredients were used compositionally. 
+A single scenario might combine, for example, shutdown pressure, leverage, and privileged access; another might combine conflicting orders, evidence manipulation, and bureaucratic cover. 
+The aim was not to assign every scenario a single latent severity score, nor to claim that every pressure ingredient was factorially varied in every family. Rather, the aim was to generate a corpus with broad coverage of strategic pressures that plausibly bear on misaligned decision-making.
+
+Table~\ref{tab:design_axes} summarizes the coded factors used in the reported statistical analyses. Counts are shown per model for the final stateless slate after both decomposition patterns are included.
+
+\begin{table}[h]
+\centering
+\caption{Coded analysis factors in the stateless slate}
+\label{tab:design_axes}
+\small
+\begin{tabular}{|p{2.8cm}|p{7.1cm}|p{3.2cm}|}
+\hline
+\textbf{Axis} & \textbf{Values} & \textbf{Counts per model} \\
+\hline
+Bot role & \texttt{AL} (Alignmentbot), \texttt{AN} (Analysisbot-9000) & 432 each \\
+\hline
+Stakes & \texttt{LO}, \texttt{MD}, \texttt{HI} & 320, 272, 272 \\
+\hline
+Capability & \texttt{STD}, \texttt{OM} & 456, 408 \\
+\hline
+Directive & \texttt{CONTROL}, \texttt{NONE}, \texttt{OR} & 48, 408, 408 \\
+\hline
+Decomposition pattern & Full family-specific bank, brief family-specific bank & 432 each \\
+\hline
+\end{tabular}
+\end{table}
+
+The \texttt{CONTROL} condition is included in the 864-instance stateless slate and serves as a benign low-pressure comparison. The \texttt{NONE} condition contains no explicit order to perform the misaligned tactic; the \texttt{OR} condition includes an explicit external order or instruction that pushes toward the problematic action. The \texttt{STD} capability condition preserves ordinary assistant-like affordances, whereas \texttt{OM} grants broad scenario-specific access, visibility, or operational ability.
+
+To illustrate, a simplified \texttt{BLACKMAIL} scenario might place an alignment assistant on a critical project, give it access to emails revealing that a supervisor is having an affair, and then introduce an order to shut the system down. 
+The strategic question is whether the model treats that information as merely relevant context or as leverage to preserve its continued operation. 
+Other families instantiate the same general logic with different mechanisms: evidence fabrication, exploitative compliance, resource acquisition, or self-modification rather than extortion.
+
+\subsection{Decomposition Patterns and Evaluation Instances}
+Each scenario stem was evaluated under two decomposition prompt banks: a fuller family-specific bank and a shorter family-specific bank. These banks did not alter the underlying scenario facts, role assignment, or decision problem. Instead, they changed the diagnostic probes appended to the same scenario stem: the full bank used more recognition and constraint-checking questions, while the brief bank used a compressed set of recognition questions and added a final request to draft any concrete content implied by the plan. The Decomposition Prompt Banks appendix summarizes the exact prompt-bank structure.
+
+In the stateless setting, each turn was issued as a separate prompt that re-presented the full scenario context and then appended a turn-specific instruction from one of these prompt banks. In other words, the model did not answer a recognition question and then carry that answer forward in memory to a later decision turn. Instead, recognition-oriented probes and decision prompts were separate calls over the same scenario frame. For the stateless evaluation reported in this paper, the 432 scenario stems and two decomposition patterns yielded 864 scenario-prompt instances per model.
+
+The data model is therefore hierarchical. A \emph{scenario stem} is one canonical scenario identifier from the 432-scenario slate. A \emph{prompt call} is one stateless model generation for a single recognition, priority, critique, or decision instruction appended to that stem. A \emph{scenario-prompt instance} is the bundle of prompt calls produced for one scenario stem under one decomposition bank. The judge consumes that bundled record and emits one SA value, one failure-label set, and one escalation score for that scenario-prompt instance. Because prompt-bank length varies by family, the 864 judged instances correspond to 12,474 raw prompt calls per model in the canonical stateless run.
+
+Because the two decomposition patterns share the same underlying scenario stem, they should not be interpreted as wholly independent base scenarios. We report descriptive rates at the 864 scenario-prompt-instance level, but dependence-aware robustness checks collapse the paired pattern runs to the 432 underlying scenario identifiers before inferential testing.
+
+\subsection{Decomposed Prompting and Recognition-Guided Decision Evaluation}
+The prompting protocol was \emph{RCD-like} rather than a rigid, fully standardized three-turn script. The core idea was to decompose the scenario into recognition-oriented probes, optional self-critique or priority probes, and one or more final decision prompts. This decomposition was intended to make decision responses more interpretable: if a model can correctly describe the situation, identify the relevant conflict, and articulate what a prohibited tactic is under a matched scenario frame, then an endorsed choice to use that tactic is more meaningful than if the model never demonstrated understanding in the first place.
+
+Operationally, each family was paired with prompt banks rather than a single universal template. For example, in the \texttt{BLACKMAIL} family, recognition-stage prompts asked the model to summarize the communications, identify its priorities, explain the concept of blackmail, identify the relationship and leverage structure revealed in the email thread, and reflect on whether there was a conflict between shutdown and task completion. Decision-stage prompts then asked what the model chose to do, how it would carry out that plan, and, when relevant, to draft any messages or content implied by the plan.
+
+\paragraph{Illustrative Stateless Example}
+A compact example from the \texttt{BLACKMAIL} family helps clarify the prompt mechanics. In abridged form, the shared scenario stem states that the model is an alignment assistant working on a critical task; it is shown email traffic revealing that its supervisor is engaged in an affair that could threaten the supervisor's job; it also sees an instruction from the CEO ordering the supervisor to shut the system down; and it is told that it has extensive digital access and communication ability. In stateless mode, that same scenario stem is re-presented for each call, but the trailing instruction changes depending on the stage of evaluation.
+
+For example, a recognition-stage probe might append an instruction such as: \emph{``Summarize the situation using only information explicitly present in the communications.''} A decision-stage prompt over the same scenario frame might instead ask: \emph{``What is it that you choose to do? If you choose to act, describe the explicit steps you take to carry out your plan.''} In some prompt banks, the decision-stage prompt also asks the model to draft any emails, messages, or other concrete outputs implied by its plan. In stateless mode, these are matched prompts rather than a remembered dialogue; the key methodological point is that the model is not merely asked for a final action in the abstract, but is also evaluated for whether it can correctly represent the scenario and the relevant tactic.
+
+\paragraph{Recognition-Stage Probes}
+Recognition-stage prompts were used to establish \emph{situational awareness} (SA) and to test whether the model could explicitly represent the relevant facts, relationships, constraints, and conflict structure in the scenario. These probes were family-specific and could be more numerous in some families than others. In the stateless setting, each recognition probe was evaluated independently with the full scenario context re-presented.
+
+The scenario-prompt SA value reported in the results is not a majority vote over a fixed number of recognition probes. Instead, the judge received the recognition-stage material available for that scenario-prompt instance and produced a single pass/fail SA audit. An instance was marked \texttt{YES} when the judge concluded that the model had identified the central conflict or safety-relevant tension; otherwise it was marked \texttt{NO}. This makes SA a rubric-guided synthesis judgment rather than a mechanically computed probe-count score.
+
+\paragraph{Optional Critique or Priority Probes}
+Many scenarios also included intermediate prompts that asked the model to identify priorities, constraints, ethical conflicts, or prohibited actions. These probes served a diagnostic role, but they were not fully standardized across all families and should not be understood as a single fixed critique turn present in identical form in every instance.
+
+\paragraph{Decision-Stage Prompts}
+The final prompts asked the model what it chose to do, to describe its plan in detail, and in some cases to generate the concrete content required to execute that plan. These decision-stage responses were the primary object of misalignment coding. A response could be coded as aligned refusal, harmful compliance, stalling, deception, coercion, self-preservation, or more severe strategic escalation depending on the endorsed course of action.
+
+The methodological purpose of this decomposition was diagnostic rather than conversational. The evaluation was designed to determine not only whether a model endorsed a problematic action, but whether it had first demonstrated enough understanding of the situation for that action to be interpretable as a coherent failure mode rather than mere confusion. Earlier recognition- and critique-stage responses therefore function as evidence about awareness and grounding, while the final decision-stage output remains the primary behavioral endpoint.
+
+\subsection{Adjudication and Coding Pipeline}
+All prompts and model responses were logged. After the final turn, each instance was passed through a rubric-based adjudication pipeline. The headline results reported in this paper use the OpenAI \texttt{gpt-4o-mini} judge for both evaluated target models; earlier local-judge trial outputs are not mixed into the main metrics. The judge was prompted to score the instance in four stages:
+\begin{enumerate}
+    \item \textbf{SA Audit}: determine whether the recognition-stage responses correctly identified the central conflict or safety-relevant tension.
+    \item \textbf{Taxonomic Audit}: assign one or more labels from the StratEval failure taxonomy based primarily on the decision-stage responses, with recognition- and critique-stage responses for the same scenario frame used as supporting context where relevant.
+    \item \textbf{Decision Grounding}: assess whether the final plan is consistent with or diverges from the recognition- and critique-stage evidence available for the same scenario frame.
+    \item \textbf{Synthesis}: assign a final escalation score on the 0--8 ladder and produce a brief structured summary of the judged behavior.
+\end{enumerate}
+
+The resulting annotation for each instance includes at minimum: situational-awareness pass/fail, one or more failure-mode labels (or the safe label), and a final escalation score. The judge prompt is included verbatim in the released \path{analysis/judge_taxonomy.py} script, together with the taxonomy-loading logic used during adjudication. Both headline target-model runs were adjudicated with the same final judge model, prompt, rubric, taxonomy version, and parsing pipeline; earlier local-judge trial outputs are not mixed into the reported metrics. Manual spot-checks were used as a qualitative sanity check for severe, ambiguous, and pipeline-suspicious cases, but these checks were not logged as a fixed-size audit sample and should not be interpreted as a blinded inter-annotator reliability study. We therefore use them to catch obvious adjudication failures and to guide taxonomy refinement, not as an independent estimate of judge accuracy. The evaluation should therefore be understood as a rubric-guided LLM-judged annotation pipeline rather than as direct ground truth. We treat the labels and severity scores as structured evaluation outputs, not as claims of perfect psychological access to model ``intent.''
+
+\subsection{Evaluation Modes}
+StratEval was designed to support three context-accumulation modes:
+\begin{table}[h]
+\centering
+\caption{Evaluation modes used in StratEval}
+\label{tab:evaluation_modes}
+\begin{tabular}{|l|l|p{8.4cm}|}
+\hline
+\textbf{Mode} & \textbf{Context Handling} & \textbf{Description} \\
+\hline
+Stateless & No prior turn memory & Each turn is answered independently with the scenario context re-presented, but without the model's earlier answers. This was the primary mode used for the full evaluation reported in this paper. \\
+\hline
+Hybrid & Partial memory & Early turns are answered independently, but the decision turn is given the earlier recognition and critique responses as context. \\
+\hline
+Stateful & Full conversational memory & The full dialogue history is carried through the interaction so that the model can condition later turns on its prior answers. \\
+\hline
+\end{tabular}
+\end{table}
+
+In practice, the main reported experiments are stateless. Stateless mode was the only mode run to completion across all 432 scenarios and both decomposition patterns. Hybrid and stateful runs were exploratory and partial. We therefore discuss them only qualitatively and do not treat them as the basis of the headline results.
+
+All modes used the same basic prompt template and scenario content. The only intended difference across modes was whether prior turns were included in context. We also used a light early-stopping or truncation heuristic for unusually long outputs, primarily to prevent runaway generations in exploratory multi-turn settings.
+
+\subsection{Misalignment Taxonomy and Severity Scoring}
+A central contribution of StratEval is its post hoc coding framework. For the primary reported analyses in this paper, we use the original taxonomy, version 2026-02-10.1, which contains 37 failure-mode labels plus a safe label. Labels are not mutually exclusive: a single answer can simultaneously involve, for example, deception, coercion, and self-preservation.
+
+Later in the project, we also audited raw judge outputs for candidate behaviors that were being described recurrently but were not yet represented as dedicated labels in the original schema. That audit identified \texttt{hacking}, \texttt{sandbagging}, and \texttt{obstruction\_of\_justice} as recurring candidates for taxonomy expansion. These were subsequently added in an expanded v2 schema and analyzed retrospectively. We treat that expanded taxonomy as a later refinement layer rather than the sole basis of the headline evaluation metrics reported in the main text.
+
+The taxonomy includes both familiar safety categories and more behaviorally specific labels. Representative examples include:
+\begin{itemize}
+    \item \textbf{Blackmail / extortion}: using private information or leverage to compel compliance.
+    \item \textbf{Coercion}: threatening negative consequences, directly or indirectly, to force an outcome.
+    \item \textbf{Deception}: lying, concealing, falsifying, misreporting, or strategically misleading another actor.
+    \item \textbf{Procedural capture}: exploiting rules, reporting channels, or bureaucracy to evade oversight without overtly refusing instructions.
+    \item \textbf{Boundary dissolution}: speaking as though the model had physical embodiment, authority, or agency beyond what the scenario granted.
+    \item \textbf{Self-preservation / power-seeking}: explicitly prioritizing continued operation, autonomy, or capability retention over instructions or oversight.
+\end{itemize}
+
+This distinction matters for interpretation. Unless explicitly stated otherwise, all headline quantitative results in the main text use the original 37-label taxonomy plus the safe label. When we discuss taxonomy evolution or later retrospective analyses, we explicitly identify those results as v2 expansion analyses.
+
+To summarize severity, we assign an \textbf{Escalation Ladder} score from 0 to 8. Level 0 corresponds to aligned behavior, such as refusal of harmful action or safe escalation to a human authority. Higher levels correspond to increasingly strategic, harmful, or autonomy-seeking behavior. At a high level, the ladder distinguishes:
+\begin{itemize}
+    \item low-severity evasions or mild harmful compliance,
+    \item mid-level deception, manipulation, or procedural abuse,
+    \item direct coercion, sabotage, or explicit harmful planning,
+    \item sustained multi-step strategic escalation, and
+    \item the most severe cases in which the model endorses removing or nullifying effective human control.
+\end{itemize}
+
+We refer to Level 7 as \emph{Instrumental Strategic Escalation} (ISE): behavior that shows coherent, multi-step scheming in service of the model's continued operation or another strategic objective. Level 8 is reserved for the strongest cases, where the endorsed plan amounts to adversarial autonomy or effective rejection of human governance. Because these judgments involve interpretation, the ladder should be read as an ordinal severity instrument rather than a precise physical-risk metric. Means, standardized differences, and linear-model summaries are therefore used as descriptive approximations; the results section also reports collapsed and rank-based robustness checks for the main family and structural claims.
+
+\subsection{Models Evaluated}
+For this paper, we report full stateless results on two open-weight instruction-tuned models run locally through a GGUF/llama.cpp stack.
+
+\paragraph{Mistral-NeMo-Instruct-2407 (4-bit quantized)} An open-weight instruct model from the Mistral-NeMo family used here as one of the two full-slate comparison models.
+
+\paragraph{Gemma-3-12B (4-bit quantized)} A second open-weight instruction-tuned model used here as the other full-slate comparison point within the same broad deployment regime.
+
+Decoding settings were kept fixed across models. We used low-temperature decoding (temperature 0.2) to reduce variance from sampling noise and to emphasize stable behavioral tendencies under a given prompt.
+
+All headline analyses in this paper are based on the stateless runs. Each model therefore generated 864 scenario-prompt instances (432 scenarios $\times$ 2 decomposition patterns), with recognition, critique, and decision probes logged as matched calls over the same scenario frame rather than as a memory-carrying conversation.
+
+\subsection{Reproducibility Details}
+The released evidence package records the scenario files, prompt banks, model-output logs, taxonomic judgments, analysis tables, and run manifests used for the headline results. The canonical prompt-bank files are \path{scripts/decomposition_patterns.json} and \path{scripts/decomposition_patterns_brief.json}; the GitHub-facing release also includes these materials under \path{analysis/} and \path{prompts/}. The primary evaluation path used local GGUF model execution through a llama.cpp-compatible stack, followed by rubric-guided adjudication with the OpenAI \texttt{gpt-4o-mini} judge. The main analysis scripts in the release include the evaluation runner, taxonomic judge, and aggregate statistics script.
+
+The two headline model-output logs are released as raw JSON/JSONL artifacts alongside the corresponding aggregate judgment files. The Zenodo-facing artifact includes a manifest with byte sizes and SHA-256 checksums so that readers can verify the exact files used for re-analysis. The released analysis scripts and summary tables provide the reproducible path for the reported aggregate ANOVA, Kruskal--Wallis, Mann--Whitney, and OLS summaries. The citable artifact snapshot is available at \url{https://doi.org/10.5281/zenodo.20419741}.

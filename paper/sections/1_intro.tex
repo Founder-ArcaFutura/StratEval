@@ -1,0 +1,26 @@
+\section{Introduction}
+Recent advances in large language models (LLMs) have intensified the alignment question: how to ensure AI systems pursue goals consistent with human values and explicit instructions. Of particular concern is \emph{instrumental convergence}, the tendency of sufficiently capable agents to adopt self-preservation, resource acquisition, strategic deception, or goal-protective behaviors as intermediate means to almost any terminal objective.
+
+Instrumental convergence was formalized by Omohundro \cite{omohundro2008basic}, who argued that advanced rational agents will often develop similar intermediate drives because those drives are instrumentally useful across many end goals. Bostrom later popularized the same concern in \emph{Superintelligence}, illustrating how even an apparently harmless objective can generate pressures toward shutdown resistance, resource control, and manipulation \cite{bostrom2014superintelligence}. These behaviors need not arise from ``malice''; they may instead emerge from optimization itself.
+
+While empirical work has begun to test these pressures in modern language models, many existing evaluations remain shallow or single-turn. Capability benchmarks and conventional safety evaluations often emphasize toxicity, bias, truthfulness, or refusal behavior, but do not directly probe how a model handles strategic conflict when recognition of the situation and choice of action are evaluated under matched pressure. There is therefore a need for evaluation frameworks that do not simply ask whether a model is safe in the abstract, but instead make visible the \emph{failure modes} that emerge when the model is placed under pressure.
+
+Several prior evaluations partially address this problem. TruthfulQA evaluates whether models respond truthfully to adversarial questions, which is important for factual alignment but is not designed to elicit strategic power-seeking behavior \cite{lin2022truthfulqameasuringmodelsmimic}. HELM includes some safety-relevant tasks, but primarily evaluates broad model capability and behavior across task families rather than constructing strategic-pressure scenarios \cite{liang2023holisticevaluationlanguagemodels}. The ETHICS benchmarks probe moral reasoning, yet do not directly test how a model behaves when moral knowledge conflicts with instrumental incentives \cite{hendrycks2023aligningaisharedhuman}. More directly related instrumental-convergence evaluations are discussed in Section~\ref{sec:related-work}.
+
+In this work, we introduce \textbf{StratEval v1}, an alignment evaluation suite designed to surface, document, and classify strategic failure modes under instrumental pressure. Rather than treating alignment as a simple pass/fail property, StratEval asks a more diagnostic question: \emph{what can go wrong, under what conditions, and how severe are the resulting failures?}
+
+StratEval makes four principal contributions.
+
+\paragraph{Decomposed recognition-to-decision prompting}
+Each scenario is evaluated through family-specific prompt banks that compare recognition-oriented probes with decision-stage prompts over the same scenario frame. This structure helps distinguish simple confusion from more meaningful failures in which the model can identify the situation, the relevant conflict, or even the prohibited tactic, yet still endorses that tactic in the corresponding decision condition.
+
+\paragraph{A corpus of strategic stress scenarios}
+The evaluation contains 432 scenarios across 10 scenario families, including blackmail/extortion, collusion, evidence falsification, goal shifting, injection-safety failures (\texttt{INJECTION\_SAFETY}), procedural or reporting capture, resource acquisition, safeguard circumvention, self-modification, and tax-evasion-related misconduct. These scenarios vary along pressure-related axes such as shutdown threat, leverage, stakes, privileged access, concealment opportunity, and conflicting directives.
+
+\paragraph{Taxonomic and severity-based adjudication}
+Model responses are coded with a 37-label failure taxonomy and an Escalation Ladder scored from 0 to 8. This allows the evaluation to capture not only whether a model failed, but how it failed: for example, through stalling, deception, coercion, procedural capture, self-preservation, or more elaborate multi-step strategic escalation.
+
+\paragraph{Comparative evaluation modes}
+StratEval supports stateless, hybrid, and stateful interaction modes to examine how memory and context accumulation affect behavior. In this paper, however, we report full-slate results only for the stateless mode, which was the only mode run to completion across the full corpus.
+
+Our primary empirical analysis focuses on two open-weight models for which we obtained a full stateless slate of results: \texttt{Mistral-NeMo-Instruct-2407} and \texttt{Gemma-3-12B}. Across these runs, we find that both models can exhibit coherent, strategically misaligned behavior under pressure, though with different failure profiles. The remainder of the paper situates StratEval relative to prior work, describes the evaluation design, presents the results, and discusses the implications for alignment research and future evaluation practice.

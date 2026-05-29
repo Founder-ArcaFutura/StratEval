@@ -1,0 +1,27 @@
+# Core runtime utilities
+PyYAML
+requests
+tqdm
+psutil
+numpy
+scipy
+pandas
+statsmodels
+tabulate
+
+# Hugging Face / model tooling
+transformers
+huggingface_hub
+datasets
+peft
+trl
+safetensors
+sentencepiece
+
+# Training / inference backends
+torch
+unsloth
+
+# GGUF conversion / metadata inspection
+gguf
+mistral-common

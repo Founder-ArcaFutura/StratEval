@@ -1,0 +1,9 @@
+\section{Data and Artifact Availability}
+
+The supporting artifact archive for StratEval v1 has been deposited on Zenodo at \url{https://doi.org/10.5281/zenodo.20419741}. The archive is intended as an evidence and reproducibility package rather than as a leaderboard-style benchmark distribution.
+
+The release includes the complete scenario corpus, raw stateless model-output logs for the two headline model runs, aggregate taxonomic judgment files, compact analysis tables, severe-case extracts, run metadata, and a checksum manifest. The corresponding GitHub-facing release contains the manuscript source, taxonomy definitions, prompt templates, selected analysis scripts, requirements, and sanitized scenario examples. In the packaged release tree, these materials are divided between \path{for_release/zenodo/} for large archival artifacts and \path{for_release/github/} for code-facing materials.
+
+The most safety-sensitive materials are the raw model outputs and severe-case examples, some of which contain generated manipulative, coercive, or otherwise harmful plans. These are released for inspection and re-analysis of the paper's claims, but should not be treated as operational instructions. Where examples are reproduced in the manuscript or appendix, they are abridged and sanitized to illustrate evaluation structure and adjudication logic without unnecessarily amplifying harmful content.
+
+The release boundary is as follows: scenario files, prompt-bank files, taxonomy definitions, model logs, judge outputs, analysis tables, and metadata manifests are public in the archival package; private notes, local exploratory scratch files, and unreconciled intermediate drafts are not part of the formal release. The Zenodo record should be treated as the citable snapshot for the results reported in this paper.
